@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+		<title>{{ rc.websiteTitle }}</title>
+	</head>
+	<body class="container">
+		<div class="well">
+		{{ rc.content }}
+		</div>
+
+		<div class="jumbotron">
+		  <h1>{{ rc.complex.hero | upper }}</h1>
+		  <p>{{ rc.complex.body }}</p>
+		  
+		  <p>
+		  	<a class="btn btn-primary btn-lg" href="{{ prc.xehLearnMore }}" role="button">Learn more</a>
+		  </p>
+		</div>
+
+		<div class="footer">
+		{{ prc.footer }}
+		</div>
+	</body>
+</html>
