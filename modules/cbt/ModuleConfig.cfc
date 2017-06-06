@@ -45,6 +45,8 @@ component {
 			// By default, Pebble will trim a newline that immediately follows a Pebble tag
 			// For example, {{key1}}\n{{key2}} will have the newline removed.
 			newLineTrimming 	= true,
+			// Bind the ColdBox Flash scope
+			bindFlash 			= true,
 			// Bind the session scope to templates
 			bindSession 		= true,
 			// Bind the cgi scope to templates

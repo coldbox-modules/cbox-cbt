@@ -51,6 +51,7 @@ component accessors="true" singleton threadsafe{
 	string function render( string template='', struct context={} ){
 	    var oWriter 	= createObject( "Java", "java.io.StringWriter" ).init();
 	    var event 		= requestService.getContext();
+	    var flash 		= requestService.getFlashScope();
 
 	    // Build out arg map for rendering
 	    var argMap = {
@@ -58,20 +59,23 @@ component accessors="true" singleton threadsafe{
 	    	"prc" 			= event.getPrivateCollection(),
 	    	"event"			= event,
 	    	"controller" 	= controller,
-	    	"cgi"			= moduleSettings.bindSession ? cgi : {},
+	    	"flash"			= moduleSettings.bindFlash ? flash.getScope() : {},
+	    	"cgi"			= moduleSettings.bindCGI ? cgi : {},
 	    	"session"		= moduleSettings.bindSession ? session : {},
-	    	"request"		= moduleSettings.bindSession ? request : {},
-	    	"server"		= moduleSettings.bindSession ? server : {},
-	    	"httpData"		= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {},
+	    	"request"		= moduleSettings.bindRequest ? request : {},
+	    	"server"		= moduleSettings.bindServer ? server : {},
+	    	"httpData"		= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {}
 	    };
 
-	    // Incorporate context
+	    // Incorporate incoming context
 	    structAppend( argMap, context, true );
 
 	    // Componse path
 	    var thisPath 	= "#variables.appPath#views/#arguments.template#.twig";
+	    
 	    // Create pebble template
 		var oTemplate 	= engine.getTemplate( thisPath );
+		
 		// bind it
 		oTemplate.evaluate( oWriter, argMap );
 

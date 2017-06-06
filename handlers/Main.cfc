@@ -16,7 +16,7 @@ component{
 		};
 
 		rc.users = [
-			getInstance( "User" ).init( "test", "man" ),jj
+			getInstance( "User" ).init( "test", "man" ),
 			getInstance( "User" ).init( "luis", "majano" ),
 			getInstance( "User" ).init( "twig", "man" )
 		];

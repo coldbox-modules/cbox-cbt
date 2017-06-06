@@ -35,6 +35,48 @@
 			{% endfor %}
 		</table>
 
+		<h2>ColdBox Flash</h2>
+		<table class="table table-hover table-condensed table-striped">
+			<tr>
+				<th>Key</th>
+				<th>Value</th>
+			</tr>
+			{% for entry in flash %}
+			    <tr>
+					<td>{{ entry.key }}</td>
+					<td>{{ entry.value }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+
+		<h2>ColdBox RC</h2>
+		<table class="table table-hover table-condensed table-striped">
+			<tr>
+				<th>Key</th>
+				<th>Value</th>
+			</tr>
+			{% for entry in rc %}
+			    <tr>
+					<td>{{ entry.key }}</td>
+					<td>{{ entry.value }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+
+		<h2>ColdBox PRC</h2>
+		<table class="table table-hover table-condensed table-striped">
+			<tr>
+				<th>Key</th>
+				<th>Value</th>
+			</tr>
+			{% for entry in prc %}
+			    <tr>
+					<td>{{ entry.key }}</td>
+					<td>{{ entry.value }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+
 		<h2>HTTP Request Data</h2>
 		<table class="table table-hover table-condensed table-striped">
 			<tr>
