@@ -15,6 +15,12 @@ component{
 			"body"	= "Welcome to the world of templating languages"
 		};
 
+		rc.users = [
+			getInstance( "User" ).init( "test", "man" ),jj
+			getInstance( "User" ).init( "luis", "majano" ),
+			getInstance( "User" ).init( "twig", "man" )
+		];
+
 		prc.xehLearnMore = event.buildLink( "main" );
 		prc.footer = "Generated on #now()#";
 

@@ -21,8 +21,92 @@
 		  </p>
 		</div>
 
+		<h2>Users</h2>
+		<table class="table table-hover table-condensed table-striped">
+			<tr>
+				<th>FirstName</th>
+				<th>LastName</th>
+			</tr>
+			{% for user in rc.users %}
+			    <tr>
+					<td>{{ user.firstName }}</td>
+					<td>{{ user.lastName }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+
+		<h2>HTTP Request Data</h2>
+		<table class="table table-hover table-condensed table-striped">
+			<tr>
+				<th>Key</th>
+				<th>Value</th>
+			</tr>
+			{% for entry in httpData %}
+			    <tr>
+					<td>{{ entry.key }}</td>
+					<td>{{ entry.value }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+
+		<h2>CGI</h2>
+		<table class="table table-hover table-condensed table-striped">
+			<tr>
+				<th>Key</th>
+				<th>Value</th>
+			</tr>
+			{% for entry in cgi %}
+			    <tr>
+					<td>{{ entry.key }}</td>
+					<td>{{ entry.value }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+
+		<h2>SERVER</h2>
+		<table class="table table-hover table-condensed table-striped">
+			<tr>
+				<th>Key</th>
+				<th>Value</th>
+			</tr>
+			{% for entry in SERVER %}
+			    <tr>
+					<td>{{ entry.key }}</td>
+					<td>{{ entry.value }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+
+		<h2>request</h2>
+		<table class="table table-hover table-condensed table-striped">
+			<tr>
+				<th>Key</th>
+				<th>Value</th>
+			</tr>
+			{% for entry in request %}
+			    <tr>
+					<td>{{ entry.key }}</td>
+					<td>{{ entry.value }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+
+		<h2>session</h2>
+		<table class="table table-hover table-condensed table-striped">
+			<tr>
+				<th>Key</th>
+				<th>Value</th>
+			</tr>
+			{% for entry in session %}
+			    <tr>
+					<td>{{ entry.key }}</td>
+					<td>{{ entry.value }}</td>
+			    </tr>
+			{% endfor %}
+		</table>
+
 		<div class="footer">
-		{{ prc.footer }}
+		{{ prc.footer }} 
 		</div>
 	</body>
 </html>

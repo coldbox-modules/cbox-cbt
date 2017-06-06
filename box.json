@@ -3,18 +3,18 @@
     "version":"1.3.1",
     "slug":"cbt-shell",
     "dependencies":{
-        "coldbox":"^4.3.0",
         "cbjavaloader":"^1.3.2",
-        "workbench":"git+https://github.com/Ortus-Solutions/unified-workbench.git"
+        "workbench":"git+https://github.com/Ortus-Solutions/unified-workbench.git",
+        "coldbox":"be"
     },
     "devDependencies":{
         "testbox":"^2.4.0+80"
     },
     "installPaths":{
-        "coldbox":"coldbox",
         "testbox":"testbox",
         "workbench":"workbench",
-        "cbjavaloader":"modules/cbjavaloader"
+        "cbjavaloader":"modules/cbjavaloader",
+        "coldbox":"coldbox"
     },
     "testbox":{
         "runner":"http://localhost:49616"

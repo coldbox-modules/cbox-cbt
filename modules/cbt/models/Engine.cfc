@@ -2,11 +2,12 @@
 * Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
+* This Engine CFC interacts with the current template processor: Pebble
 */
 component accessors="true" singleton threadsafe{
 
 	// DI
-	property name="moduleSettings" 	inject="coldbox:setting:cbt";
+	property name="moduleSettings" 	inject="coldbox:modulesettings:cbt";
 	property name="javaLoader"		inject="loader@cbjavaloader";
 	property name="controller" 		inject="coldbox";
 	property name="requestService" 	inject="coldbox:requestService";
@@ -28,7 +29,8 @@ component accessors="true" singleton threadsafe{
 	function onDIComplete(){
 		// Setup the pebble engine on startup.
 		var oBuilder	= javaLoader.create( "com.mitchellbosecke.pebble.PebbleEngine$Builder" );
-		// Setup Engine settings
+		
+		// Setup Engine settings according to module settings
 		oBuilder.strictVariables( javaCast( "boolean", moduleSettings.strictVariables ) );
 		oBuilder.autoEscaping( javaCast( "boolean", moduleSettings.autoEscaping ) );
 		oBuilder.cacheActive( javaCast( "boolean", moduleSettings.cacheActive ) );
@@ -42,7 +44,7 @@ component accessors="true" singleton threadsafe{
 	}
 
 	/**
-	* Render out a twig template
+	* Render out a template using the templating language
 	* @template The template to render out using discovery
 	* @context A structure of data to bind the rendering with
 	*/
@@ -55,7 +57,12 @@ component accessors="true" singleton threadsafe{
 	    	"rc" 			= event.getCollection(),
 	    	"prc" 			= event.getPrivateCollection(),
 	    	"event"			= event,
-	    	"controller" 	= controller
+	    	"controller" 	= controller,
+	    	"cgi"			= moduleSettings.bindSession ? cgi : {},
+	    	"session"		= moduleSettings.bindSession ? session : {},
+	    	"request"		= moduleSettings.bindSession ? request : {},
+	    	"server"		= moduleSettings.bindSession ? server : {},
+	    	"httpData"		= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {},
 	    };
 
 	    // Incorporate context

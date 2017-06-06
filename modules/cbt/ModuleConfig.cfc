@@ -32,11 +32,29 @@ component {
 		settings = {
 			// The library path
 			libPath 			= modulePath & "/lib",
+			// If in strict mode, exceptions will be thrown for variables that do not exist, else it prints them out as empty values
 			strictVariables 	= false,
+			// Sets whether or not escaping should be performed automatically, defaults to true.
 			autoEscaping 		= true,
-			cacheActive 		= true,
+			// Enable/disable all cache
+			cacheActive 		= false,
+			// Activate localization or not, default is false
+			i18nActive			= false,
+			// Sets the default Locale passed to all templates constructed by the pebble engine.
 			defaultLocale 		= "en_US",
-			newLineTrimming 	= true
+			// By default, Pebble will trim a newline that immediately follows a Pebble tag
+			// For example, {{key1}}\n{{key2}} will have the newline removed.
+			newLineTrimming 	= true,
+			// Bind the session scope to templates
+			bindSession 		= true,
+			// Bind the cgi scope to templates
+			bindCGI 			= true,
+			// Bind the request scope to templates
+			bindRequest 		= true,
+			// Bind the server scope to templates
+			bindServer 			= true,
+			// Bind to the request's HTTP Request Data elements
+			bindHTTPRequestData = true
 		}
 	}
 
