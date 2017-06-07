@@ -15,7 +15,7 @@ component{
 			"body"	= "Welcome to the world of templating languages"
 		};
 
-		rc.users = [
+		rc[ "users" ] = [
 			getInstance( "User" ).init( "test", "man" ),
 			getInstance( "User" ).init( "luis", "majano" ),
 			getInstance( "User" ).init( "twig", "man" )
