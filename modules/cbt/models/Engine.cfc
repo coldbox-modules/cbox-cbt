@@ -67,6 +67,11 @@ component accessors="true" singleton threadsafe{
 	    	"httpData"		= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {}
 	    };
 
+	    argMap = this.toJava( argMap );
+
+	    // writeDump(var=argMap);
+	    // abort;
+
 	    // Incorporate incoming context
 	    structAppend( argMap, context, true );
 
@@ -82,5 +87,62 @@ component accessors="true" singleton threadsafe{
 		// render it out
 		return oWriter.toString();
 	}
+
+	private any function toJava( required any obj ){
+
+		//Convert components to a map representation of their properties
+		if( isValid( "component", arguments.obj ) ){
+			
+			var md = getMetadata( arguments.obj );
+			var props = md.properties;
+
+			// Return null if we have no ability to access the properties
+			if( !arrayLen( props ) || !structKeyExists( md, "accessors" ) || md[ "accessors" ] == "false" ){
+				return javacast( "null", 0 );
+			}
+
+			var map = createObject( "java", "java.util.HashMap" ).init();
+
+			for( var prop in props ){
+
+				var accessor = arguments.obj[ "get" & prop.name ];
+
+				map[ prop.name ] = toJava( accessor() );
+
+			}
+
+			return map;
+
+		//convert structs to java.util.HashMap
+		} else if( isStruct( arguments.obj ) ){
+			
+			var map = createObject( "java", "java.util.HashMap" ).init();
+			
+			map.putAll( arguments.obj );
+			
+			for( var key in map ){
+				if( !isSimpleValue( map[ key ] ) ){
+					map[ key ] = toJava( map[ key ] );
+				}
+			}
+
+			return map
+
+		//convert structs to java.util.ArrayList
+		} else if(isArray(arguments.obj)){
+			
+			var list = createObject( "java", "java.util.ArrayList" ).init();
+
+			for(var member in arguments.obj){
+				list.add( toJava( member ) );
+			}
+
+			return list;
+		
+		//Otherwise return the object
+		} else {
+			return arguments.obj;
+		}
+	} 
 	
 }
