@@ -88,11 +88,14 @@ component accessors="true" singleton threadsafe{
 		return oWriter.toString();
 	}
 
-	private any function toJava( required any obj ){
-
-		//Convert components to a map representation of their properties
-		if( isValid( "component", arguments.obj ) ){
+	private any function toJava( any obj ){
+		if( isNull( arguments.obj ) ){
 			
+			return javacast( "null", 0 );
+
+		//Convert components to a map representation of their properties	
+		} else if( isValid( "component", arguments.obj ) ){
+		
 			var md = getMetadata( arguments.obj );
 			var props = md.properties;
 
@@ -130,7 +133,7 @@ component accessors="true" singleton threadsafe{
 
 		//convert structs to java.util.ArrayList
 		} else if(isArray(arguments.obj)){
-			
+
 			var list = createObject( "java", "java.util.ArrayList" ).init();
 
 			for(var member in arguments.obj){
