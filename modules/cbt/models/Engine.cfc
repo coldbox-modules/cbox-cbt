@@ -23,6 +23,12 @@ component accessors="true" singleton threadsafe{
 	* Constructor
 	*/
 	function init(){
+		variables.appPath           = "";
+		variables.viewsConvention   = "";
+		variables.layoutsConvention = "";
+		variables.engine            = "";
+		variables.modulesConfig 	= {};
+
 		return this;
 	}
 
@@ -39,14 +45,18 @@ component accessors="true" singleton threadsafe{
 
 		// Build Engine out
 		variables.engine = oBuilder.build();
-
-		variables.appPath 	= controller.getSetting( "ApplicationPath" );
+		// Setup Pathing
+		variables.appPath 			= controller.getSetting( "ApplicationPath" );
+		variables.viewsConvention 	= controller.getSetting( "viewsConvention", true );
+		variables.layoutsConvention = controller.getSetting( "layoutsConvention", true );
+		variables.modulesConfig		= controller.getSetting( "modules" );
 	}
 
 	/**
 	* Render out a template using the templating language
-	* @template The template to render out using discovery
-	* @context A structure of data to bind the rendering with
+	* 
+	* @template The template to render. By convention we will look in the views convention of the current application or running module.
+	* @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
 	*/
 	string function render( string template='', struct context={} ){
 	    var oWriter 	= createObject( "Java", "java.io.StringWriter" ).init();
@@ -55,31 +65,48 @@ component accessors="true" singleton threadsafe{
 
 	    // Build out arg map for rendering
 	    var argMap = {
+	    	// ColdBox Scopes
 	    	"rc" 			= event.getCollection(),
 	    	"prc" 			= event.getPrivateCollection(),
-	    	"event"			= event,
-	    	"controller" 	= controller,
 	    	"flash"			= moduleSettings.bindFlash ? flash.getScope() : {},
+	    	
+	    	// ColdBox Context
+	    	"now"					 = now(),
+	    	"baseURL" 				 = event.buildLink( '' ),
+	    	"currentAction" 		 = event.getCurrentAction(),
+	    	"currentEvent" 			 = event.getCurrentEvent(),
+	    	"currentHandler" 		 = event.getcurrentHandler(),
+	    	"currentLayout" 		 = event.getCurrentLayout(),
+	    	"currentModule" 		 = event.getCurrentModule(),
+	    	"currentRoute" 			 = event.getCurrentRoute(),
+	    	"currentRoutedURL"  	 = event.getCurrentRoutedURL(),
+	    	"currentRoutedNamespace" = event.getCurrentRoutedNamespace(),
+	    	"currentView"		     = event.getCurrentView(),
+	    	
+	    	// ColdFusion Scopes
 	    	"cgi"			= moduleSettings.bindCGI ? cgi : {},
 	    	"session"		= moduleSettings.bindSession ? session : {},
 	    	"request"		= moduleSettings.bindRequest ? request : {},
 	    	"server"		= moduleSettings.bindServer ? server : {},
-	    	"httpData"		= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {}
+	    	"httpData"		= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {},
+	    	
+	    	// ColdBox Pathing Prefixes
+	    	"appPath"		= variables.appPath,
+	    	"layoutsPath"	= variables.appPath & "layouts/",
+	    	"viewsPath"		= variables.appPath & "views/",
+	    	"modulePath" 	= event.getModuleRoot()
 	    };
 
 	    argMap = this.toJava( argMap );
 
-	    // writeDump(var=argMap);
-	    // abort;
-
 	    // Incorporate incoming context
 	    structAppend( argMap, context, true );
 
-	    // Componse path
-	    var thisPath 	= "#variables.appPath#views/#arguments.template#.twig";
+	    // Discover view
+	    var thisPath = discoverTemplate( arguments.template, event );
 	    
 	    // Create pebble template
-		var oTemplate 	= engine.getTemplate( thisPath );
+		var oTemplate= engine.getTemplate( thisPath );
 		
 		// bind it
 		oTemplate.evaluate( oWriter, argMap );
@@ -88,16 +115,42 @@ component accessors="true" singleton threadsafe{
 		return oWriter.toString();
 	}
 
+	/**
+	 * Discover a template from the ColdBox Eco-System
+	 */
+	function discoverTemplate( required template, required event ){
+		var currentModule = event.getCurrentModule();
+
+		// Append our .cbt extension if needed
+		if( !findNoCase( ".cbt", arguments.template ) ){
+			arguments.template &= ".cbt";
+		}
+
+		// Module Mode?
+		if( len( currentModule )  ){
+			return "#variables.modulesConfig[ currentModule ].path#/#variables.modulesConfig[ currentModule ].conventions.viewsLocation#/#arguments.template#";
+		} 
+		// View Mode
+		else {
+			return thisPath = "#variables.appPath##variables.viewsConvention#/#arguments.template#";
+		}
+	}
+
+	/**
+	 * Convert CFML to java types
+	 * @obj Target objects for conversion
+	 */
 	private any function toJava( any obj ){
+		// Convert nulls to proper java nulls
 		if( isNull( arguments.obj ) ){
 			
 			return javacast( "null", 0 );
 
-		//Convert components to a map representation of their properties	
+		// Convert components to a map representation of their properties
 		} else if( isValid( "component", arguments.obj ) ){
 		
-			var md = getMetadata( arguments.obj );
-			var props = md.properties;
+			var md 		= getMetadata( arguments.obj );
+			var props 	= md.properties;
 
 			// Return null if we have no ability to access the properties
 			if( !arrayLen( props ) || !structKeyExists( md, "accessors" ) || md[ "accessors" ] == "false" ){
@@ -105,7 +158,6 @@ component accessors="true" singleton threadsafe{
 			}
 
 			var map = createObject( "java", "java.util.HashMap" ).init();
-
 			for( var prop in props ){
 
 				var accessor = arguments.obj[ "get" & prop.name ];
@@ -115,14 +167,14 @@ component accessors="true" singleton threadsafe{
 			}
 
 			return map;
-
+		
 		//convert structs to java.util.HashMap
 		} else if( isStruct( arguments.obj ) ){
 			
 			var map = createObject( "java", "java.util.HashMap" ).init();
 			
 			map.putAll( arguments.obj );
-			
+
 			for( var key in map ){
 				if( !isSimpleValue( map[ key ] ) ){
 					map[ key ] = toJava( map[ key ] );
@@ -130,19 +182,18 @@ component accessors="true" singleton threadsafe{
 			}
 
 			return map
-
-		//convert structs to java.util.ArrayList
-		} else if(isArray(arguments.obj)){
+		// convert structs to java.util.ArrayList
+		} else if( isArray( arguments.obj ) ){
 
 			var list = createObject( "java", "java.util.ArrayList" ).init();
 
-			for(var member in arguments.obj){
+			for( var member in arguments.obj ){
 				list.add( toJava( member ) );
 			}
 
 			return list;
 		
-		//Otherwise return the object
+		// Otherwise return the object as is
 		} else {
 			return arguments.obj;
 		}

@@ -15,7 +15,7 @@ component{
 			"body"	= "Welcome to the world of templating languages"
 		};
 
-		rc[ "users" ] = [
+		prc[ "users" ] = [
 			getInstance( "User" ).init( "test", "man" ),
 			getInstance( "User" ).init( "luis", "majano" ),
 			getInstance( "User" ).init( "twig", "man" )
@@ -25,6 +25,13 @@ component{
 		prc.footer = "Generated on #now()#";
 
 		return cbt.render( "main/simple" );
+	}
+
+	/**
+	* inheritance
+	*/
+	function inheritance( event, rc, prc ){
+		return cbt.render( "main/inheritance" );
 	}
 
 	// Run on first init

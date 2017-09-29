@@ -1,0 +1,8 @@
+{% extends layoutsPath + "Main.cbt" %}
+
+{% block title %} Module {% endblock %}
+
+{% block content %}
+	<h1> {{ event.getCurrentModule() }} </h1>
+	<p> Welcome to my cool module page.</p>
+{% endblock %}

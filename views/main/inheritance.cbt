@@ -1,0 +1,8 @@
+{% extends layoutsPath + "Main.twig" %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+	<h1> Home </h1>
+	<p> Welcome to my inherited page.</p>
+{% endblock %}
