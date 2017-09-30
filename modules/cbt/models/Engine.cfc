@@ -162,7 +162,12 @@ component accessors="true" singleton threadsafe{
 		} else if( isValid( "component", arguments.obj ) ){
 		
 			var md 		= getMetadata( arguments.obj );
-			var props 	= md.properties ?: [ ];
+			var props 	= md.properties ?: [];
+
+			// weird cf11 metadata bug
+			if( isSimpleValue( props ) ){
+				props = [ ];
+			}
 
 			// Return null if we have no ability to access the properties
 			if( !arrayLen( props ) || !structKeyExists( md, "accessors" ) || md[ "accessors" ] == "false" ){
