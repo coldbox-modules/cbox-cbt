@@ -6,6 +6,10 @@ The ColdBox templating language is inspired by [Twig](https://twig.symfony.com/)
 
 The ColdBox Templating Engine is fully featured and adheres to the Twig syntax and Pebble Extensions. Please follow the templating language documentation here: http://www.mitchellbosecke.com/pebble/documentation
 
+## Sponsorship
+
+This project was sponsored by **IDG Media Services** as one of our ColdBox Sponsors.  So thank you so much for your patronage and continued support: https://www.idg.de
+
 ## LICENSE
 Apache License, Version 2.0.
 
