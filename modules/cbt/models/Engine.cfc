@@ -186,7 +186,10 @@ component accessors="true" singleton threadsafe{
 			map.putAll( arguments.obj );
 
 			for( var key in map ){
-				if( !isSimpleValue( map[ key ] ) ){
+				// Null checks, stupid java
+				if( isNull( map[ key ] ) ){
+					map[ key ] = "null";
+				} else if( !isSimpleValue( map[ key ] ) ){
 					map[ key ] = toJava( map[ key ] );
 				}
 			}
@@ -198,7 +201,7 @@ component accessors="true" singleton threadsafe{
 			var list = createObject( "java", "java.util.ArrayList" ).init();
 
 			for( var member in arguments.obj ){
-				list.add( toJava( member ) );
+				list.add( toJava( member ?: "" ) );
 			}
 
 			return list;
