@@ -30,6 +30,16 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 				expect(	loader ).toBeComponent();
 			});
 
+			it( "should compile templates by convention", function(){
+				var e = execute( event="main.index", renderResults=true );
+				expect(	e.getRenderedContent() ).toInclude( "I am running on CBT baby!" );
+			});
+
+			it( "should module templates by convention", function(){
+				var e = execute( event="testing:home.index", renderResults=true );
+				expect(	e.getRenderedContent() ).toInclude( "Welcome to my cool module page" );
+			});
+
 		});
 	}
 

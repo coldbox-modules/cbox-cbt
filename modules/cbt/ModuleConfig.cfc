@@ -56,8 +56,10 @@ component {
 			// Bind the server scope to templates
 			bindServer 			= true,
 			// Bind to the request's HTTP Request Data elements
-			bindHTTPRequestData = true
-		}
+			bindHTTPRequestData = true,
+			// The default cbt templating language template extension
+			templateExtension 	= ".cbt"
+		};
 	}
 
 	/**

@@ -82,6 +82,7 @@ component accessors="true" singleton threadsafe{
 	    	"currentRoutedURL"  	 = event.getCurrentRoutedURL(),
 	    	"currentRoutedNamespace" = event.getCurrentRoutedNamespace(),
 	    	"currentView"		     = event.getCurrentView(),
+	    	"moduleRoot"			 = event.getModuleRoot(),
 	    	
 	    	// ColdFusion Scopes
 	    	"cgi"			= moduleSettings.bindCGI ? cgi : {},
@@ -91,13 +92,23 @@ component accessors="true" singleton threadsafe{
 	    	"httpData"		= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {},
 	    	
 	    	// ColdBox Pathing Prefixes
-	    	"appPath"		= variables.appPath,
-	    	"layoutsPath"	= variables.appPath & "layouts/",
-	    	"viewsPath"		= variables.appPath & "views/",
-	    	"modulePath" 	= event.getModuleRoot()
+	    	"appPath"				= variables.appPath,
+	    	"layoutsPath"			= variables.appPath & "layouts/",
+	    	"viewsPath"				= variables.appPath & "views/",
+	    	"modulePath" 			= "",
+	    	"modulesLayoutsPath" 	= "",
+	    	"modulesViewsPath"		= ""
 	    };
 
-	    argMap = this.toJava( argMap );
+	    // Are we in a module, bind the module path
+	    if( len( event.getCurrentModule() ) ){
+	    	argMap.modulePath 			= variables.modulesConfig[ event.getCurrentModule() ].path;
+	    	argMap.modulesLayoutsPath 	= argMap.modulePath & "/" & variables.modulesConfig[ event.getCurrentModule() ].conventions.layoutsLocation;
+	    	argMap.modulesViewsPath 	= argMap.modulePath & "/" & variables.modulesConfig[ event.getCurrentModule() ].conventions.viewsLocation;
+	    }
+
+	    // CF To Java Conversions
+	    argMap = toJava( argMap );
 
 	    // Incorporate incoming context
 	    structAppend( argMap, context, true );
@@ -119,11 +130,12 @@ component accessors="true" singleton threadsafe{
 	 * Discover a template from the ColdBox Eco-System
 	 */
 	function discoverTemplate( required template, required event ){
-		var currentModule = event.getCurrentModule();
+		var currentModule 	= event.getCurrentModule();
+		var extension 		= variables.moduleSettings.templateExtension;
 
 		// Append our .cbt extension if needed
-		if( !findNoCase( ".cbt", arguments.template ) ){
-			arguments.template &= ".cbt";
+		if( !findNoCase( extension, arguments.template ) ){
+			arguments.template &= extension;
 		}
 
 		// Module Mode?
@@ -132,7 +144,7 @@ component accessors="true" singleton threadsafe{
 		} 
 		// View Mode
 		else {
-			return thisPath = "#variables.appPath##variables.viewsConvention#/#arguments.template#";
+			return "#variables.appPath##variables.viewsConvention#/#arguments.template#";
 		}
 	}
 
@@ -150,7 +162,7 @@ component accessors="true" singleton threadsafe{
 		} else if( isValid( "component", arguments.obj ) ){
 		
 			var md 		= getMetadata( arguments.obj );
-			var props 	= md.properties;
+			var props 	= md.properties ?: [ ];
 
 			// Return null if we have no ability to access the properties
 			if( !arrayLen( props ) || !structKeyExists( md, "accessors" ) || md[ "accessors" ] == "false" ){
@@ -159,11 +171,9 @@ component accessors="true" singleton threadsafe{
 
 			var map = createObject( "java", "java.util.HashMap" ).init();
 			for( var prop in props ){
-
-				var accessor = arguments.obj[ "get" & prop.name ];
-
-				map[ prop.name ] = toJava( accessor() );
-
+				map[ prop.name ] = toJava( 
+					evaluate( "arguments.obj.get#prop.name#()" )
+				);
 			}
 
 			return map;
@@ -181,7 +191,7 @@ component accessors="true" singleton threadsafe{
 				}
 			}
 
-			return map
+			return map;
 		// convert structs to java.util.ArrayList
 		} else if( isArray( arguments.obj ) ){
 
