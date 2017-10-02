@@ -14,7 +14,7 @@ component accessors="true"{
 		return {
 			"firstName" = variables.firstName,
 			"lastName" 	= variables.lastName
-		}
+		};
 	}
 
 }
