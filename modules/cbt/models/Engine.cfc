@@ -28,6 +28,9 @@ component accessors="true" singleton threadsafe{
 		variables.layoutsConvention = "";
 		variables.engine            = "";
 		variables.modulesConfig 	= {};
+		// Java System
+		variables.system 			= createObject( "java", "java.lang.System" );
+		variables.tmpDir 			= variables.system.getProperty( "java.io.tmpdir" );
 
 		return this;
 	}
@@ -53,6 +56,29 @@ component accessors="true" singleton threadsafe{
 	}
 
 	/**
+	* Render out from a-la-carte content instead of from files.  Internally, we will use the RAM file resource
+	* to stream the intermediate content
+	* @content The twig content convert
+	* @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
+	*/
+	string function renderContent( required string content, struct context={} ){
+		// filename is based on content hash, this way it will be placed in memory until it changes.
+		var fileName = variables.tmpDir & "cbt-content-#hash( arguments.content )#.#variables.moduleSettings.templateExtension#";
+
+		// Double locking for race conditions
+		if( !fileExists( fileName ) ){
+			lock name="#filename#" type="exclusive" timeout="5" throwOnTimeout=true{
+				if( !fileExists( fileName ) ){
+					// Stream out the content
+					fileWrite( filename, arguments.content );
+				}
+			}
+		}
+		// Render it out.
+		return render( template=fileName, context=arguments.context );
+	}
+
+	/**
 	* Render out a template using the templating language
 	* 
 	* @template The template to render. By convention we will look in the views convention of the current application or running module.
@@ -71,12 +97,17 @@ component accessors="true" singleton threadsafe{
 	    // Incorporate incoming context
 	    structAppend( argMap, context, true );
 
-	    // Discover view
-	    var thisPath = discoverTemplate( 
-			template = arguments.template, 
-			event    = event, 
-			module   = arguments.module 
-		);
+	    // Discover view or check if absolute already?
+		if( fileExists( arguments.template ) ){
+			var thisPath = arguments.template;
+		} else {
+			var thisPath = discoverTemplate( 
+				template = arguments.template, 
+				event    = event, 
+				module   = arguments.module 
+			);
+		}
+	    
 	    
 	    // Parse the template
 		var oTemplate= engine.getTemplate( thisPath );

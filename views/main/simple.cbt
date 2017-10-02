@@ -40,6 +40,8 @@
 		{# This is a nice Twig Comment, use the raw filter to Unescape Content Variables. #}
 		{{ prc.moduleView | raw }}
 
+		{{ prc.onDemandContent | raw }}
+
 
 		<h2>Users</h2>
 		<table class="table table-hover table-condensed table-striped">

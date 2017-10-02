@@ -26,7 +26,24 @@ component{
 		prc.footer             = "Generated on #now()#";
 
 		// Content Variables
-		prc.moduleView = cbt.render( template="home/simple", module="testing" );
+		prc.moduleView 		= cbt.render( template="home/simple", module="testing" );
+
+		savecontent variable="local.onDemand"{
+			writeOutput("
+				<h2>On-Demand Renderings</h2>
+				{{ 'Rendering from OnDemand Baby' | upper }}
+				<br>
+				{{ max( 20, 100 ) }}
+				<br>
+				Today is {{ now | date( 'yyyy-MMM-dd HH:mm:ss' ) }}
+				<br>
+				BaseURL: {{ baseURL }}
+			")
+		}
+
+		prc.onDemandContent = cbt.renderContent(
+			content = onDemand
+		);
 
 		return cbt.render( "main/simple" );
 	}
