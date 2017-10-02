@@ -28,9 +28,7 @@ component accessors="true" singleton threadsafe{
 		variables.layoutsConvention = "";
 		variables.engine            = "";
 		variables.modulesConfig 	= {};
-		// Java System
-		variables.system 			= createObject( "java", "java.lang.System" );
-		variables.tmpDir 			= variables.system.getProperty( "java.io.tmpdir" );
+		variables.tmpDir 			= getDirectoryFromPath( getMetadata( this ).path ) & "tmp";
 
 		return this;
 	}
@@ -53,6 +51,19 @@ component accessors="true" singleton threadsafe{
 		variables.viewsConvention 	= controller.getSetting( "viewsConvention", true );
 		variables.layoutsConvention = controller.getSetting( "layoutsConvention", true );
 		variables.modulesConfig		= controller.getSetting( "modules" );
+
+		// Clear out stubs just in case on startup
+		clearOnDemandCache();
+	}
+
+	/**
+	* Clears the ondemand cache.
+	*/
+	public function clearOnDemandCache(){
+		var aListings = directoryList( variables.tmpDir, false, "path", "*cbt" );
+		for( var thisFile in aListings ){
+			fileDelete( thisFile );
+		}
 	}
 
 	/**
@@ -62,8 +73,10 @@ component accessors="true" singleton threadsafe{
 	* @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
 	*/
 	string function renderContent( required string content, struct context={} ){
+		// Trim content
+		arguments.content = trim( arguments.content );
 		// filename is based on content hash, this way it will be placed in memory until it changes.
-		var fileName = variables.tmpDir & "cbt-content-#hash( arguments.content )#.#variables.moduleSettings.templateExtension#";
+		var fileName = variables.tmpDir & "/cbt-content-#hash( arguments.content )##variables.moduleSettings.templateExtension#";
 
 		// Double locking for race conditions
 		if( !fileExists( fileName ) ){
@@ -81,7 +94,7 @@ component accessors="true" singleton threadsafe{
 	/**
 	* Render out a template using the templating language
 	* 
-	* @template The template to render. By convention we will look in the views convention of the current application or running module.
+	* @template The template to render. By convention we will look in the views convention of the current application or running module. This can also be an absolute path.
 	* @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
 	* @module If passed, then we will bypass lookup for templates and go to the specified module to render the template from.
 	*/

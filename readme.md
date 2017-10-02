@@ -89,16 +89,29 @@ This module will register the templating engine in WireBox as `engine@cbt` which
 property name="cbt" inject="engine@cbt";
 ```
 
-The main rendering method in the engine is called `render( template, context )`:
+The main rendering methods in the engine are `render( template, context, module )` and `renderContent( content, context)`:
 
 ```js
 /**
 * Render out a template using the templating language
 * 
-* @template The template to render. By convention we will look in the views convention of the current application or running module.
+* @template The template to render. By convention we will look in the views convention of the current application or running module. This can be also an absolute path.
+* @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
+* @module If passed, then we will bypass lookup for templates and go to the specified module to render the template from.
+*/
+string function render( 
+    string template='', 
+    struct context={},
+    string module=''
+);
+
+/**
+* Render out from a-la-carte content instead of from files.  Internally, we will use the RAM file resource
+* to stream the intermediate content
+* @content The twig content convert
 * @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
 */
-string function render( string template='', struct context={} ){}
+string function renderContent( required string content, struct context={} );
 ```
 
 > Note: You can optionally bind a `context` structure to the template, which will allow you to access data/objects in the top level scope of the templates.
@@ -106,7 +119,48 @@ string function render( string template='', struct context={} ){}
 Your twig compatible templates will be binded with a structure called `context`
  that will contain all the top-level variables the cbt module exposes plus all custom variables you pass into the templates.  By default, the cbt module will bind many ColdBox conventions and variable scopes.  Please see the next section for more information.
 
-### Relative Paths
+### Rendering by Conventions
+
+You can skip to the ColdBox Conventions section below for further in-depth review, but using the `render()` method allows you to pass in a template name and internally we will discover it using the same ColdBox conventions as `event.setView()` and `renderView()`.  The only difference, is that you can also pass in an absolute path `template` and we will bypass the lookups and just use the template for rendering:
+
+```
+// By Convention
+return cbt.render( "main/index" );
+
+// By Absolute Path
+return cb.render( "/my/path/long" );
+```
+
+### Rendering From Modules
+
+You can use the `module` argument to render templates directly from any ColdBox module.  This is the same as using the `module` argument in `event.setView()` and `renderView()` methods in ColdBox.  This bypasses the lookup procedures and renders directly from a module.
+
+### Rendering On Demand
+
+You can also render on-demand templating by passing the content as a variable instead as a file.  Internally, we will stream your content uniquely to file in the `cbt/models/tmp` directory and then sent to the pebble engine for conversion.
+
+
+```js
+savecontent variable="local.onDemand"{
+    writeOutput("
+        <h2>On-Demand Renderings</h2>
+        {{ 'Rendering from OnDemand Baby' | upper }}
+        <br>
+        {{ max( 20, 100 ) }}
+        <br>
+        Today is {{ now | date( 'yyyy-MMM-dd HH:mm:ss' ) }}
+        <br>
+        BaseURL: {{ baseURL }}
+    ")
+}
+
+prc.onDemandContent = cbt.renderContent(
+    content = onDemand
+);
+```
+
+
+### Including/Inheritance with Relative Paths
 
 The templating language allows you to include or extend from other templates.  You can use relative pathing or absolute pathing.  All relative paths will start with `.\` or going back a level `..\`.
 
