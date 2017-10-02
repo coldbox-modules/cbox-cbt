@@ -89,7 +89,7 @@ This module will register the templating engine in WireBox as `engine@cbt` which
 property name="cbt" inject="engine@cbt";
 ```
 
-The main rendering methods in the engine are `render( template, context, module )` and `renderContent( content, context)`:
+The main rendering methods in the engine are `renderTemplate( template, context, module )` and `renderContent( content, context)`:
 
 ```js
 /**
@@ -99,7 +99,7 @@ The main rendering methods in the engine are `render( template, context, module 
 * @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
 * @module If passed, then we will bypass lookup for templates and go to the specified module to render the template from.
 */
-string function render( 
+string function renderTemplate( 
     string template='', 
     struct context={},
     string module=''
@@ -121,14 +121,14 @@ Your twig compatible templates will be binded with a structure called `context`
 
 ### Rendering by Conventions
 
-You can skip to the ColdBox Conventions section below for further in-depth review, but using the `render()` method allows you to pass in a template name and internally we will discover it using the same ColdBox conventions as `event.setView()` and `renderView()`.  The only difference, is that you can also pass in an absolute path `template` and we will bypass the lookups and just use the template for rendering:
+You can skip to the ColdBox Conventions section below for further in-depth review, but using the `renderTemplate()` method allows you to pass in a template name and internally we will discover it using the same ColdBox conventions as `event.setView()` and `renderView()`.  The only difference, is that you can also pass in an absolute path `template` and we will bypass the lookups and just use the template for rendering:
 
 ```
 // By Convention
-return cbt.render( "main/index" );
+return cbt.renderTemplate( "main/index" );
 
 // By Absolute Path
-return cb.render( "/my/path/long" );
+return cb.renderTemplate( "/my/path/long" );
 ```
 
 ### Rendering From Modules
@@ -188,10 +188,10 @@ Then go nuts with the Java Engine!
 
 ### `.cbt` extension
 
-By default, the extension we will look for in the templates is `.cbt`.  This is configurable via the `templateExtension` settings.  You do not need to append the `.cbt` extension when calling the `render()` method.
+By default, the extension we will look for in the templates is `.cbt`.  This is configurable via the `templateExtension` settings.  You do not need to append the `.cbt` extension when calling the `renderTemplate()` method.
 
 ```js
-cb.render( "main/index" );
+cb.renderTemplate( "main/index" );
 ```
 
 > Important: You MUST use the extension when doing includes or template inheritance in the templates.
@@ -201,14 +201,14 @@ cb.render( "main/index" );
 The cbt engine has been configured to work with your ColdBox MVC applications in many enhanced ways.
 
 #### Rendering Conventions
-By convention, the cbt language knows about your layouts/views and module views.  So when you call the `render( template )` method it will take into account the context of execution: parent application or a module just like calling the `event.setView()` and `renderView()` methods in ColdBox.
+By convention, the cbt language knows about your layouts/views and module views.  So when you call the `renderTemplate( template )` method it will take into account the context of execution: parent application or a module just like calling the `event.setView()` and `renderView()` methods in ColdBox.
 
 ```js
 function index( event, rc, prc ){
     // Get data
     prc.data = service.getData();
     // Render the main/index.cbt template
-    return cbt.render( "main/index" );
+    return cbt.renderTemplate( "main/index" );
 }
 ```
 

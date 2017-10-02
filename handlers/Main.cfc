@@ -26,7 +26,7 @@ component{
 		prc.footer             = "Generated on #now()#";
 
 		// Content Variables
-		prc.moduleView 		= cbt.render( template="home/simple", module="testing" );
+		prc.moduleView 		= cbt.renderTemplate( template="home/simple", module="testing" );
 
 		savecontent variable="local.onDemand"{
 			writeOutput("
@@ -45,14 +45,14 @@ component{
 			content = onDemand
 		);
 
-		return cbt.render( "main/simple" );
+		return cbt.renderTemplate( "main/simple" );
 	}
 
 	/**
 	* inheritance
 	*/
 	function inheritance( event, rc, prc ){
-		return cbt.render( "main/inheritance" );
+		return cbt.renderTemplate( "main/inheritance" );
 	}
 
 	// Run on first init

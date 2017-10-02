@@ -88,7 +88,7 @@ component accessors="true" singleton threadsafe{
 			}
 		}
 		// Render it out.
-		return render( template=fileName, context=arguments.context );
+		return renderTemplate( template=fileName, context=arguments.context );
 	}
 
 	/**
@@ -98,7 +98,7 @@ component accessors="true" singleton threadsafe{
 	* @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
 	* @module If passed, then we will bypass lookup for templates and go to the specified module to render the template from.
 	*/
-	string function render( 
+	string function renderTemplate( 
 		string template='', 
 		struct context={},
 		string module=''
