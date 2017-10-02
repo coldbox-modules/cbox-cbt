@@ -16,13 +16,17 @@ component{
 		};
 
 		prc[ "users" ] = [
-			getInstance( "User" ).init( "test", "man" ),
-			getInstance( "User" ).init( "luis", "majano" ),
-			getInstance( "User" ).init( "twig", "man" )
+			getInstance( "User" ).init( "test", "man" ).getMemento(),
+			getInstance( "User" ).init( "luis", "majano" ).getMemento(),
+			getInstance( "User" ).init( "twig", "man" ).getMemento()
 		];
 
-		prc.xehLearnMore = event.buildLink( "main" );
-		prc.footer = "Generated on #now()#";
+		prc.xehLearnMore       = event.buildLink( "main" );
+		prc.xehModuleRendering = event.buildLink( "testing/home" );
+		prc.footer             = "Generated on #now()#";
+
+		// Content Variables
+		prc.moduleView = cbt.render( template="home/simple", module="testing" );
 
 		return cbt.render( "main/simple" );
 	}

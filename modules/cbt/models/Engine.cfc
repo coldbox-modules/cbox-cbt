@@ -57,66 +57,28 @@ component accessors="true" singleton threadsafe{
 	* 
 	* @template The template to render. By convention we will look in the views convention of the current application or running module.
 	* @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
+	* @module If passed, then we will bypass lookup for templates and go to the specified module to render the template from.
 	*/
-	string function render( string template='', struct context={} ){
+	string function render( 
+		string template='', 
+		struct context={},
+		string module=''
+	){
 	    var oWriter 	= createObject( "Java", "java.io.StringWriter" ).init();
 	    var event 		= requestService.getContext();
-	    var flash 		= requestService.getFlashScope();
-
-	    // Build out arg map for rendering
-	    var argMap = {
-	    	// ColdBox Scopes
-	    	"rc" 			= event.getCollection(),
-	    	"prc" 			= event.getPrivateCollection(),
-	    	"flash"			= moduleSettings.bindFlash ? flash.getScope() : {},
-	    	
-	    	// ColdBox Context
-	    	"now"					 = now(),
-	    	"baseURL" 				 = event.buildLink( '' ),
-	    	"currentAction" 		 = event.getCurrentAction(),
-	    	"currentEvent" 			 = event.getCurrentEvent(),
-	    	"currentHandler" 		 = event.getcurrentHandler(),
-	    	"currentLayout" 		 = event.getCurrentLayout(),
-	    	"currentModule" 		 = event.getCurrentModule(),
-	    	"currentRoute" 			 = event.getCurrentRoute(),
-	    	"currentRoutedURL"  	 = event.getCurrentRoutedURL(),
-	    	"currentRoutedNamespace" = event.getCurrentRoutedNamespace(),
-	    	"currentView"		     = event.getCurrentView(),
-	    	"moduleRoot"			 = event.getModuleRoot(),
-	    	
-	    	// ColdFusion Scopes
-	    	"cgi"			= moduleSettings.bindCGI ? cgi : {},
-	    	"session"		= moduleSettings.bindSession ? session : {},
-	    	"request"		= moduleSettings.bindRequest ? request : {},
-	    	"server"		= moduleSettings.bindServer ? server : {},
-	    	"httpData"		= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {},
-	    	
-	    	// ColdBox Pathing Prefixes
-	    	"appPath"				= variables.appPath,
-	    	"layoutsPath"			= variables.appPath & "layouts/",
-	    	"viewsPath"				= variables.appPath & "views/",
-	    	"modulePath" 			= "",
-	    	"modulesLayoutsPath" 	= "",
-	    	"modulesViewsPath"		= ""
-	    };
-
-	    // Are we in a module, bind the module path
-	    if( len( event.getCurrentModule() ) ){
-	    	argMap.modulePath 			= variables.modulesConfig[ event.getCurrentModule() ].path;
-	    	argMap.modulesLayoutsPath 	= argMap.modulePath & "/" & variables.modulesConfig[ event.getCurrentModule() ].conventions.layoutsLocation;
-	    	argMap.modulesViewsPath 	= argMap.modulePath & "/" & variables.modulesConfig[ event.getCurrentModule() ].conventions.viewsLocation;
-	    }
-
-	    // CF To Java Conversions
-	    argMap = toJava( argMap );
+		var argMap 		= generateBindingContext( event=event, module=arguments.module );
 
 	    // Incorporate incoming context
 	    structAppend( argMap, context, true );
 
 	    // Discover view
-	    var thisPath = discoverTemplate( arguments.template, event );
+	    var thisPath = discoverTemplate( 
+			template = arguments.template, 
+			event    = event, 
+			module   = arguments.module 
+		);
 	    
-	    // Create pebble template
+	    // Parse the template
 		var oTemplate= engine.getTemplate( thisPath );
 		
 		// bind it
@@ -128,9 +90,14 @@ component accessors="true" singleton threadsafe{
 
 	/**
 	 * Discover a template from the ColdBox Eco-System
+	 * @template The template convention to lookup
+	 * @event The request context
+	 * @module If passed, look for the view in this module.
 	 */
-	function discoverTemplate( required template, required event ){
-		var currentModule 	= event.getCurrentModule();
+	function discoverTemplate( required template, required event, string module="" ){
+		// Direct or indirect module execution
+		var currentModule 	= ( len( arguments.module ) ? arguments.module : event.getCurrentModule() );
+		// Default template extensions
 		var extension 		= variables.moduleSettings.templateExtension;
 
 		// Append our .cbt extension if needed
@@ -149,7 +116,75 @@ component accessors="true" singleton threadsafe{
 	}
 
 	/**
+	* Generate binding context
+	* @event The ColdBox Request context to bind with
+	* @module Are we in direct module template mode?
+	*/
+	private struct function generateBindingContext( required event, string module="" ){
+		var flash = requestService.getFlashScope();
+
+	    // Build out arg map for rendering
+	    var argMap = {
+	    	// ColdBox Scopes
+	    	"rc" 						= event.getCollection(),
+	    	"prc" 						= event.getPrivateCollection(),
+	    	"flash"						= moduleSettings.bindFlash ? flash.getScope() : {},
+	    	
+	    	// ColdBox Context
+	    	"now"					 	= now(),
+	    	"baseURL" 				 	= event.buildLink( '' ),
+	    	"currentAction" 		 	= event.getCurrentAction(),
+	    	"currentEvent" 			 	= event.getCurrentEvent(),
+	    	"currentHandler" 		 	= event.getcurrentHandler(),
+	    	"currentLayout" 		 	= event.getCurrentLayout(),
+	    	"currentModule" 		 	= event.getCurrentModule(),
+	    	"currentRoute" 			 	= event.getCurrentRoute(),
+	    	"currentRoutedURL"  	 	= event.getCurrentRoutedURL(),
+	    	"currentRoutedNamespace" 	= event.getCurrentRoutedNamespace(),
+	    	"currentView"		     	= event.getCurrentView(),
+	    	"moduleRoot"			 	= event.getModuleRoot(),
+	    	
+	    	// ColdFusion Scopes
+	    	"cgi"						= moduleSettings.bindCGI ? cgi : {},
+	    	"session"					= moduleSettings.bindSession ? session : {},
+	    	"request"					= moduleSettings.bindRequest ? request : {},
+	    	"server"					= moduleSettings.bindServer ? server : {},
+	    	"httpData"					= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {},
+	    	
+	    	// ColdBox Pathing Prefixes
+	    	"appPath"					= variables.appPath,
+	    	"layoutsPath"				= variables.appPath & "layouts/",
+	    	"viewsPath"					= variables.appPath & "views/",
+	    	"modulePath" 				= "",
+	    	"modulesLayoutsPath" 		= "",
+	    	"modulesViewsPath"			= ""
+	    };
+
+	    // Are we in a module, bind the module path
+	    if( len( event.getCurrentModule() ) ){
+	    	argMap.modulePath 			= variables.modulesConfig[ event.getCurrentModule() ].path;
+	    	argMap.modulesLayoutsPath 	= argMap.modulePath & "/" & variables.modulesConfig[ event.getCurrentModule() ].conventions.layoutsLocation;
+	    	argMap.modulesViewsPath 	= argMap.modulePath & "/" & variables.modulesConfig[ event.getCurrentModule() ].conventions.viewsLocation;
+	    }
+
+		// Are we in direct module execution mode?
+		if( len( arguments.module ) ){
+			argMap.modulePath 			= variables.modulesConfig[ arguments.module ].path;
+	    	argMap.modulesLayoutsPath 	= argMap.modulePath & "/" & variables.modulesConfig[ arguments.module ].conventions.layoutsLocation;
+	    	argMap.modulesViewsPath 	= argMap.modulePath & "/" & variables.modulesConfig[ arguments.module ].conventions.viewsLocation;
+		}
+
+		// CF To Java Conversions, removed due to performance, user must send data instead of objects
+		// Discover further if we can do our own Java parser to detect CFC's and execute them via reflection.
+	    //argMap = toJava( argMap );
+
+		return argMap;
+	}
+
+	/**
 	 * Convert CFML to java types
+	 * Experimental, removing for now until further conventions can be done with CFC types.
+	 *
 	 * @obj Target objects for conversion
 	 */
 	private any function toJava( any obj ){

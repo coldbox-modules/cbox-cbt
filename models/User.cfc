@@ -10,4 +10,11 @@ component accessors="true"{
 		return this;
 	}
 
+	function getMemento(){
+		return {
+			"firstName" = variables.firstName,
+			"lastName" 	= variables.lastName
+		}
+	}
+
 }

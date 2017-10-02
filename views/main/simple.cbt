@@ -33,6 +33,12 @@
 		Today is {{ now | date( "yyyy-MMM-dd HH:mm:ss" ) }}
 		<br>
 		BaseURL: {{ baseURL }}
+		<br>
+		<a href="{{ prc.xehModuleRendering }}">Module Rendering</a>
+
+		<h2>Module ON-Demand</h2>
+		{# This is a nice Twig Comment, use the raw filter to Unescape Content Variables. #}
+		{{ prc.moduleView | raw }}
 
 
 		<h2>Users</h2>
