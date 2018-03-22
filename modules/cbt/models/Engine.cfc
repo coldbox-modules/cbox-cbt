@@ -15,6 +15,11 @@ component accessors="true" singleton threadsafe{
 	// Properties
 
 	/**
+	 * Temporary path for on-demand rendering, leverages `getTempDirectory()`
+	 */
+	property name="tmpDir";
+
+	/**
 	* The internal engine used for the markup builder, in our case this points to a Pebble Engine Builder.
 	*/
 	property name="engine";
@@ -28,14 +33,14 @@ component accessors="true" singleton threadsafe{
 		variables.layoutsConvention = "";
 		variables.engine            = "";
 		variables.modulesConfig 	= {};
-		variables.tmpDir 			= getDirectoryFromPath( getMetadata( this ).path ) & "tmp";
+		variables.tmpDir 			= getTempDirectory();
 
 		return this;
 	}
 
 	function onDIComplete(){
 		// Setup the pebble engine on startup.
-		var oBuilder	= javaLoader.create( "com.mitchellbosecke.pebble.PebbleEngine$Builder" );
+		var oBuilder = javaLoader.create( "com.mitchellbosecke.pebble.PebbleEngine$Builder" );
 		
 		// Setup Engine settings according to module settings
 		oBuilder.strictVariables( javaCast( "boolean", moduleSettings.strictVariables ) );
