@@ -1,25 +1,25 @@
 {
-    "name": "cbt Builder",
-    "version": "1.0.1",
-    "slug": "cbt-shell",
-    "dependencies": {
-        "cbjavaloader": "^1.5.0",
-        "workbench": "git+https://github.com/Ortus-Solutions/unified-workbench.git",
-        "coldbox": "be"
+    "name":"cbt Builder",
+    "version":"1.0.1",
+    "slug":"cbt-shell",
+    "dependencies":{
+        "cbjavaloader":"^1.5.0",
+        "workbench":"git+https://github.com/Ortus-Solutions/unified-workbench.git",
+        "coldbox":"4.3.0"
     },
-    "devDependencies": {
-        "testbox": "^2.6.0"
+    "devDependencies":{
+        "testbox":"^2.6.0+156"
     },
-    "installPaths": {
-        "testbox": "testbox",
-        "workbench": "workbench",
-        "cbjavaloader": "modules/cbjavaloader",
-        "coldbox": "coldbox"
+    "installPaths":{
+        "testbox":"testbox/",
+        "workbench":"workbench/",
+        "cbjavaloader":"modules/cbjavaloader",
+        "coldbox":"coldbox/"
     },
-    "testbox": {
-        "runner": "http://localhost:49616"
+    "testbox":{
+        "runner":"http://localhost:49616"
     },
-    "scripts": {
-        "postVersion": "recipe workbench/bump.boxr"
+    "scripts":{
+        "postVersion":"recipe workbench/bump.boxr"
     }
 }
