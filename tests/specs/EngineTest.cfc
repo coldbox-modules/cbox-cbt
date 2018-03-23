@@ -59,7 +59,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 				expect( results )
 					.toInclude( "100" )
-					.toInclude( "BaseURL: http://127.0.0.1:49616/root/index.cfm" );
+					.toInclude( "root/index.cfm" );
 			});
 
 		});
