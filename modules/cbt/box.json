@@ -23,7 +23,7 @@
         "Curt Gratz <gratz@computerknowhow.com>"
     ],
     "dependencies":{
-        "cbjavaloader":"^1.4.0"
+        "cbjavaloader":"^1.5.0"
     },
     "ignore":[
         "**/.*",

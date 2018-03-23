@@ -30,6 +30,38 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 				expect(	loader ).toBeComponent();
 			});
 
+			it( "should compile templates by convention", function(){
+				var e = execute( event="main.index", renderResults=true );
+				expect(	e.getRenderedContent() ).toInclude( "I am running on CBT baby!" );
+			});
+
+			it( "should module templates by convention", function(){
+				var e = execute( event="testing:home.index", renderResults=true );
+				expect(	e.getRenderedContent() ).toInclude( "Welcome to my cool module page" );
+			});
+
+			it( "should render on demand templating", function(){
+				var loader = getLoader();
+				var onDemand = "
+					<h2>On-Demand Renderings</h2>
+					{{ 'Rendering from OnDemand Baby' | upper }}
+					<br>
+					{{ max( 20, 100 ) }}
+					<br>
+					Today is {{ now | date( 'yyyy-MMM-dd HH:mm:ss' ) }}
+					<br>
+					BaseURL: {{ baseURL }}
+				";
+
+				var results = loader.renderContent(
+					content = onDemand
+				);
+
+				expect( results )
+					.toInclude( "100" )
+					.toInclude( "root/index.cfm" );
+			});
+
 		});
 	}
 

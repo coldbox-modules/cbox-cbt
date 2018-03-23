@@ -10,9 +10,10 @@
         "http":{
             "port":"49616"
         },
-        "rewrites" : {
-            "enable" : true
-        }
+        "rewrites":{
+            "enable":true
+        },
+        "webroot":"/Users/lmajano/Sites/cboxdev/coldbox-core-modules/cbox-cbt//"
     },
     "JVM":{
         "heapSize":"1024"

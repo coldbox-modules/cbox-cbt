@@ -1,0 +1,4 @@
+<h3>Simple CBT Template executed at {{ now }}</h3>
+<p>
+    This showcases that you can render a module cbt template on-demand
+</p>

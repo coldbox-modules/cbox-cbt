@@ -15,23 +15,44 @@ component{
 			"body"	= "Welcome to the world of templating languages"
 		};
 
+		prc[ "user" ] = getInstance( "User" ).init( "Simple", "Bean" );
+
 		prc[ "users" ] = [
-			getInstance( "User" ).init( "test", "man" ),
-			getInstance( "User" ).init( "luis", "majano" ),
-			getInstance( "User" ).init( "twig", "man" )
+			getInstance( "User" ).init( "test", "man" ).getMemento(),
+			getInstance( "User" ).init( "luis", "majano" ).getMemento(),
+			getInstance( "User" ).init( "twig", "man" ).getMemento()
 		];
 
-		prc.xehLearnMore = event.buildLink( "main" );
-		prc.footer = "Generated on #now()#";
+		prc.xehLearnMore       = event.buildLink( "main" );
+		prc.xehModuleRendering = event.buildLink( "testing/home" );
+		prc.footer             = "Generated on #now()#";
 
-		return cbt.render( "main/simple" );
+		// Content Variables
+		prc.moduleView 		= cbt.renderTemplate( template="home/simple", module="testing" );
+
+		var onDemand = "
+			<h2>On-Demand Renderings</h2>
+			{{ 'Rendering from OnDemand Baby' | upper }}
+			<br>
+			{{ max( 20, 100 ) }}
+			<br>
+			Today is {{ now | date( 'yyyy-MMM-dd HH:mm:ss' ) }}
+			<br>
+			BaseURL: {{ baseURL }}
+		";
+
+		prc.onDemandContent = cbt.renderContent(
+			content = onDemand
+		);
+
+		return cbt.renderTemplate( "main/simple" );
 	}
 
 	/**
 	* inheritance
 	*/
 	function inheritance( event, rc, prc ){
-		return cbt.render( "main/inheritance" );
+		return cbt.renderTemplate( "main/inheritance" );
 	}
 
 	// Run on first init
