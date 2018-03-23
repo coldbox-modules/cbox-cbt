@@ -6,7 +6,7 @@ component accessors="true"{
 	function init( firstName="", lastName="" ){
 		variables.firstName = arguments.firstName;
 		variables.lastName = arguments.lastName;
-		
+
 		return this;
 	}
 

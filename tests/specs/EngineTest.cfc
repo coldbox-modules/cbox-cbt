@@ -40,6 +40,28 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 				expect(	e.getRenderedContent() ).toInclude( "Welcome to my cool module page" );
 			});
 
+			it( "should render on demand templating", function(){
+				var loader = getLoader();
+				var onDemand = "
+					<h2>On-Demand Renderings</h2>
+					{{ 'Rendering from OnDemand Baby' | upper }}
+					<br>
+					{{ max( 20, 100 ) }}
+					<br>
+					Today is {{ now | date( 'yyyy-MMM-dd HH:mm:ss' ) }}
+					<br>
+					BaseURL: {{ baseURL }}
+				";
+
+				var results = loader.renderContent(
+					content = onDemand
+				);
+
+				expect( results )
+					.toInclude( "100" )
+					.toInclude( "BaseURL: http://127.0.0.1:49616/root/index.cfm" );
+			});
+
 		});
 	}
 

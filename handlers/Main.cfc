@@ -15,6 +15,8 @@ component{
 			"body"	= "Welcome to the world of templating languages"
 		};
 
+		prc[ "user" ] = getInstance( "User" ).init( "Simple", "Bean" );
+
 		prc[ "users" ] = [
 			getInstance( "User" ).init( "test", "man" ).getMemento(),
 			getInstance( "User" ).init( "luis", "majano" ).getMemento(),

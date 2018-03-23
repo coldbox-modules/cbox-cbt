@@ -13,8 +13,8 @@
     "installPaths":{
         "testbox":"testbox/",
         "workbench":"workbench/",
-        "cbjavaloader":"modules/cbjavaloader",
-        "coldbox":"coldbox/"
+        "cbjavaloader":"modules/cbjavaloader/",
+        "coldbox":"coldbox"
     },
     "testbox":{
         "runner":"http://localhost:49616"

@@ -12,8 +12,8 @@
 	<body class="container">
 
 		<div class="well">
-		<h2>Trying Relative Include</h2>
-		{% include "./header.cbt" %}
+			<h2>Trying Relative Include</h2>
+			{% include "./header.cbt" %}
 		</div>
 
 		<div class="jumbotron">

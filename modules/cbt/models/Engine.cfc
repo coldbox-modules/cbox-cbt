@@ -65,26 +65,29 @@ component accessors="true" singleton threadsafe{
 	* Clears the ondemand cache.
 	*/
 	public function clearOnDemandCache(){
-		var aListings = directoryList( variables.tmpDir, false, "path", "*cbt" );
-		for( var thisFile in aListings ){
-			fileDelete( thisFile );
-		}
+		directoryList( variables.tmpDir, false, "path", "*cbt" )
+			.each( function( item ){
+				fileDelete( item );	
+			} );
 	}
 
 	/**
-	* Render out from a-la-carte content instead of from files.  Internally, we will use the RAM file resource
-	* to stream the intermediate content
-	* @content The twig content convert
-	* @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
-	*/
+	 * Render out from a-la-carte content instead of from files.  Internally, we will use the RAM file resource
+	 * to stream the intermediate content
+	 * 
+	 * @content The templating content to convert
+	 * @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
+	 */
 	string function renderContent( required string content, struct context={} ){
 		// Trim content
 		arguments.content = trim( arguments.content );
+
 		// filename is based on content hash, this way it will be placed in memory until it changes.
 		var fileName = variables.tmpDir & "/cbt-content-#hash( arguments.content )##variables.moduleSettings.templateExtension#";
 
 		// Double locking for race conditions
 		if( !fileExists( fileName ) ){
+			// 5 seconds to compile
 			lock name="#filename#" type="exclusive" timeout="5" throwOnTimeout=true{
 				if( !fileExists( fileName ) ){
 					// Stream out the content
@@ -92,6 +95,7 @@ component accessors="true" singleton threadsafe{
 				}
 			}
 		}
+
 		// Render it out.
 		return renderTemplate( template=fileName, context=arguments.context );
 	}
@@ -126,11 +130,10 @@ component accessors="true" singleton threadsafe{
 			);
 		}
 	    
-	    
 	    // Parse the template
-		var oTemplate= engine.getTemplate( thisPath );
+		var oTemplate = engine.getTemplate( thisPath );
 		
-		// bind it
+		// bind it for evaluation
 		oTemplate.evaluate( oWriter, argMap );
 
 		// render it out
@@ -139,6 +142,7 @@ component accessors="true" singleton threadsafe{
 
 	/**
 	 * Discover a template from the ColdBox Eco-System
+	 * 
 	 * @template The template convention to lookup
 	 * @event The request context
 	 * @module If passed, look for the view in this module.
@@ -181,7 +185,7 @@ component accessors="true" singleton threadsafe{
 	    	
 	    	// ColdBox Context
 	    	"now"					 	= now(),
-	    	"baseURL" 				 	= event.buildLink( '' ),
+	    	"baseURL" 				 	= event.getSESBaseURL(),
 	    	"currentAction" 		 	= event.getCurrentAction(),
 	    	"currentEvent" 			 	= event.getCurrentEvent(),
 	    	"currentHandler" 		 	= event.getcurrentHandler(),
