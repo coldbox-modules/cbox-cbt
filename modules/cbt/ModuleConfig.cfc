@@ -36,15 +36,8 @@ component {
 			strictVariables 	= false,
 			// Sets whether or not escaping should be performed automatically, defaults to true.
 			autoEscaping 		= true,
-			// Enable/disable all cache
-			cacheActive 		= false,
-			// Activate localization or not, default is false
-			i18nActive			= false,
-			// Sets the default Locale passed to all templates constructed by the pebble engine.
-			defaultLocale 		= "en_US",
-			// By default, Pebble will trim a newline that immediately follows a Pebble tag
-			// For example, {{key1}}\n{{key2}} will have the newline removed.
-			newLineTrimming 	= true,
+			// Enable/disable all caching of templates.   Turn this off for development please.
+			cacheActive 		= true,
 			// Bind the ColdBox Flash scope
 			bindFlash 			= true,
 			// Bind the session scope to templates

@@ -34,7 +34,7 @@ component{
 			<h2>On-Demand Renderings</h2>
 			{{ 'Rendering from OnDemand Baby' | upper }}
 			<br>
-			{{ max( 20, 100 ) }}
+			{{ number_format( 123234.22 ) }}
 			<br>
 			Today is {{ now | date( 'yyyy-MMM-dd HH:mm:ss' ) }}
 			<br>

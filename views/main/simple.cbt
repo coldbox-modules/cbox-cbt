@@ -26,9 +26,9 @@
 		</div>
 
 		<h2>Utility Bindings</h2>
-		{{ "If life gives you lemons, eat lemons." | upper | abbreviate( 20 ) }}
+		{{ "If life gives you lemons, eat lemons." | upper }}
 		<br>
-		{{ max( 20, 100 ) }}
+		{{ number_format( 156554.25 ) }}
 		<br>
 		Today is {{ now | date( "yyyy-MMM-dd HH:mm:ss" ) }}
 		<br>
@@ -41,7 +41,6 @@
 		{{ prc.moduleView | raw }}
 
 		{{ prc.onDemandContent | raw }}
-
 
 		<h2>Users</h2>
 		<table class="table table-hover table-condensed table-striped">
@@ -63,10 +62,10 @@
 				<th>Key</th>
 				<th>Value</th>
 			</tr>
-			{% for entry in flash %}
+			{% for key, value in flash %}
 			    <tr>
-					<td>{{ entry.key }}</td>
-					<td>{{ entry.value }}</td>
+					<td>{{ key }}</td>
+					<td>{{ value }}</td>
 			    </tr>
 			{% endfor %}
 		</table>
@@ -77,10 +76,10 @@
 				<th>Key</th>
 				<th>Value</th>
 			</tr>
-			{% for entry in rc %}
+			{% for key, value in rc %}
 			    <tr>
-					<td>{{ entry.key }}</td>
-					<td>{{ entry.value }}</td>
+					<td>{{ key }}</td>
+					<td>{{ value }}</td>
 			    </tr>
 			{% endfor %}
 		</table>
@@ -91,10 +90,10 @@
 				<th>Key</th>
 				<th>Value</th>
 			</tr>
-			{% for entry in prc %}
+			{% for key, value in prc %}
 			    <tr>
-					<td>{{ entry.key }}</td>
-					<td>{{ entry.value }}</td>
+					<td>{{ key }}</td>
+					<td>{{ value }}</td>
 			    </tr>
 			{% endfor %}
 		</table>
@@ -105,10 +104,10 @@
 				<th>Key</th>
 				<th>Value</th>
 			</tr>
-			{% for entry in httpData %}
+			{% for key, value in httpData %}
 			    <tr>
-					<td>{{ entry.key }}</td>
-					<td>{{ entry.value }}</td>
+					<td>{{ key }}</td>
+					<td>{{ value }}</td>
 			    </tr>
 			{% endfor %}
 		</table>
@@ -119,10 +118,10 @@
 				<th>Key</th>
 				<th>Value</th>
 			</tr>
-			{% for entry in cgi %}
+			{% for key, value in cgi %}
 			    <tr>
-					<td>{{ entry.key }}</td>
-					<td>{{ entry.value }}</td>
+					<td>{{ key }}</td>
+					<td>{{ value }}</td>
 			    </tr>
 			{% endfor %}
 		</table>
@@ -133,10 +132,10 @@
 				<th>Key</th>
 				<th>Value</th>
 			</tr>
-			{% for entry in SERVER %}
+			{% for key, value in SERVER %}
 			    <tr>
-					<td>{{ entry.key }}</td>
-					<td>{{ entry.value }}</td>
+					<td>{{ key }}</td>
+					<td>{{ value }}</td>
 			    </tr>
 			{% endfor %}
 		</table>
@@ -147,10 +146,10 @@
 				<th>Key</th>
 				<th>Value</th>
 			</tr>
-			{% for entry in request %}
+			{% for key, value in request %}
 			    <tr>
-					<td>{{ entry.key }}</td>
-					<td>{{ entry.value }}</td>
+					<td>{{ key }}</td>
+					<td>{{ value }}</td>
 			    </tr>
 			{% endfor %}
 		</table>
@@ -161,10 +160,10 @@
 				<th>Key</th>
 				<th>Value</th>
 			</tr>
-			{% for entry in session %}
+			{% for key, value in session %}
 			    <tr>
-					<td>{{ entry.key }}</td>
-					<td>{{ entry.value }}</td>
+					<td>{{ key }}</td>
+					<td>{{ value }}</td>
 			    </tr>
 			{% endfor %}
 		</table>

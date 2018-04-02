@@ -78,6 +78,12 @@ component{
 			}
 		];
 
+		moduleSettings = {
+			cbt = {
+				cacheActive = false
+			}
+		};
+
 	}
 
 }

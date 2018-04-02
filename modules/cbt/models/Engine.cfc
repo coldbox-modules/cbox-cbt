@@ -12,63 +12,47 @@ component accessors="true" singleton threadsafe{
 	property name="controller" 		inject="coldbox";
 	property name="requestService" 	inject="coldbox:requestService";
 
-	// Properties
-
-	/**
-	 * Temporary path for on-demand rendering, leverages `getTempDirectory()`
-	 */
-	property name="tmpDir";
-
-	/**
-	* The internal engine used for the markup builder, in our case this points to a Pebble Engine Builder.
-	*/
-	property name="engine";
-
 	/**
 	* Constructor
 	*/
-	function init(){
-		variables.appPath           = "";
-		variables.viewsConvention   = "";
-		variables.layoutsConvention = "";
-		variables.engine            = "";
-		variables.modulesConfig 	= {};
-		variables.tmpDir 			= getTempDirectory();
+	Engine function init(){
+		variables.appPath           	= "";
+		variables.viewsConvention   	= "";
+		variables.layoutsConvention 	= "";
+		variables.engineConfiguration	= "";
+		variables.modulesConfig 		= {};
 
 		return this;
 	}
 
+	/**
+	 * Load up Configurations
+	 */
 	function onDIComplete(){
-		// Setup the pebble engine on startup.
-		var oBuilder = javaLoader.create( "com.mitchellbosecke.pebble.PebbleEngine$Builder" );
-		
-		// Setup Engine settings according to module settings
-		oBuilder.strictVariables( javaCast( "boolean", moduleSettings.strictVariables ) );
-		oBuilder.autoEscaping( javaCast( "boolean", moduleSettings.autoEscaping ) );
-		oBuilder.cacheActive( javaCast( "boolean", moduleSettings.cacheActive ) );
-		//oBuilder.defaultLocale( javaCast( "boolean", moduleSettings.defaultLocale ) );
-		oBuilder.newLineTrimming( javaCast( "boolean", moduleSettings.newLineTrimming ) );
-
-		// Build Engine out
-		variables.engine = oBuilder.build();
-		// Setup Pathing
+		// Setup Pathing + Module Settings
 		variables.appPath 			= controller.getSetting( "ApplicationPath" );
 		variables.viewsConvention 	= controller.getSetting( "viewsConvention", true );
 		variables.layoutsConvention = controller.getSetting( "layoutsConvention", true );
 		variables.modulesConfig		= controller.getSetting( "modules" );
 
-		// Clear out stubs just in case on startup
-		clearOnDemandCache();
-	}
+		// Get default configuration for builder
+		//variables.engineConfiguration = javaLoader.create( "org.jtwig.environment.DefaultEnvironmentConfiguration" ).init();
 
-	/**
-	* Clears the ondemand cache.
-	*/
-	public function clearOnDemandCache(){
-		directoryList( variables.tmpDir, false, "path", "*cbt" )
-			.each( function( item ){
-				fileDelete( item );	
-			} );
+		var configBuilder = javaLoader.create( "org.jtwig.environment.EnvironmentConfigurationBuilder" )
+			.configuration()
+				.render()
+					.withStrictMode( javaCast( "boolean", moduleSettings.strictVariables ) )
+				.and();
+
+		// Caching
+		if( !moduleSettings.cacheActive ){
+			configBuilder
+				.parser()
+					.withoutTemplateCache()
+				.and();
+		}
+		
+		variables.engineConfiguration = configBuilder.build();
 	}
 
 	/**
@@ -82,23 +66,20 @@ component accessors="true" singleton threadsafe{
 		// Trim content
 		arguments.content = trim( arguments.content );
 
-		// filename is based on content hash, this way it will be placed in memory until it changes.
-		var fileName = variables.tmpDir & "/cbt-content-#hash( arguments.content )##variables.moduleSettings.templateExtension#";
-
-		// Double locking for race conditions
-		if( !fileExists( fileName ) ){
-			// 5 seconds to compile
-			lock name="#filename#" type="exclusive" timeout="5" throwOnTimeout=true{
-				if( !fileExists( fileName ) ){
-					// Stream out the content
-					fileWrite( filename, arguments.content );
-				}
-			}
-		}
+		// Generate template from incoming string
+		var oTemplate = javaLoader.create( "org.jtwig.JtwigTemplate" )
+			.inlineTemplate( arguments.content, variables.engineConfiguration );
+		
+		// Generate Context + Model
+		var argMap = generateBindingContext( event=requestService.getContext() );
+		// Incorporate incoming context
+		argMap.append( context, true );
+		var oModel = javaLoader.create( "org.jtwig.JtwigModel" ).newModel( argMap );
 
 		// Render it out.
-		return renderTemplate( template=fileName, context=arguments.context );
+		return oTemplate.render( oModel );
 	}
+	
 
 	/**
 	* Render out a template using the templating language
@@ -112,7 +93,6 @@ component accessors="true" singleton threadsafe{
 		struct context={},
 		string module=''
 	){
-	    var oWriter 	= createObject( "Java", "java.io.StringWriter" ).init();
 	    var event 		= requestService.getContext();
 		var argMap 		= generateBindingContext( event=event, module=arguments.module );
 
@@ -129,15 +109,15 @@ component accessors="true" singleton threadsafe{
 				module   = arguments.module 
 			);
 		}
-	    
-	    // Parse the template
-		var oTemplate = engine.getTemplate( thisPath );
-		
-		// bind it for evaluation
-		oTemplate.evaluate( oWriter, argMap );
 
-		// render it out
-		return oWriter.toString();
+		// Generate template from incoming string
+		var oTemplate = javaLoader.create( "org.jtwig.JtwigTemplate" )
+			.fileTemplate( thisPath, variables.engineConfiguration );
+		// Generate Model from context
+		var oModel = javaLoader.create( "org.jtwig.JtwigModel" ).newModel( argMap )
+
+	    // Render it out
+	    return oTemplate.render( oModel );
 	}
 
 	/**
@@ -169,10 +149,11 @@ component accessors="true" singleton threadsafe{
 	}
 
 	/**
-	* Generate binding context
-	* @event The ColdBox Request context to bind with
-	* @module Are we in direct module template mode?
-	*/
+	 * Generate binding context
+	 * 
+	 * @event The ColdBox Request context to bind with
+	 * @module Are we in direct module template mode?
+	 */
 	private struct function generateBindingContext( required event, string module="" ){
 		var flash = requestService.getFlashScope();
 
