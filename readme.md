@@ -248,7 +248,7 @@ By convention, the cbt language will bind the following variables into the templ
 "layoutsPath"       = variables.appPath & "layouts/",
 "viewsPath"         = variables.appPath & "views/",
 "modulePath"        = "",
-"modulesLayoutsPath = "",
+"modulesLayoutsPath" = "",
 "modulesViewsPath"  = ""
 ```
 
