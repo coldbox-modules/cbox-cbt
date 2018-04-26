@@ -270,7 +270,7 @@ As you can see from the bindings above, the templates are binded with several pa
 You can then use them in your templates:
 
 ```html
-{% extends layoutsPath + "Main.twig" %}
+{% extends layoutsPath + "Main.cbt" %}
 
 {% include modulesViewspath + "/tags/header.cbt" %}
 ``` 
