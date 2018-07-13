@@ -248,7 +248,7 @@ By convention, the cbt language will bind the following variables into the templ
 "layoutsPath"       = variables.appPath & "layouts/",
 "viewsPath"         = variables.appPath & "views/",
 "modulePath"        = "",
-"modulesLayoutsPath = "",
+"modulesLayoutsPath" = "",
 "modulesViewsPath"  = ""
 ```
 
@@ -270,7 +270,7 @@ As you can see from the bindings above, the templates are binded with several pa
 You can then use them in your templates:
 
 ```html
-{% extends layoutsPath + "Main.twig" %}
+{% extends layoutsPath + "Main.cbt" %}
 
 {% include modulesViewspath + "/tags/header.cbt" %}
 ``` 
@@ -285,7 +285,7 @@ Copyright Since 2005 ColdBox Framework by Ortus Solutions, Corp
 www.ortussolutions.com
 ********************************************************************************
 #### HONOR GOES TO GOD ABOVE ALL
-Because of His grace, this project exists. If you don't like this, then don't read it, its not for you.
+Because of His grace, this project exists. If you don't like this, then don't read it, it's not for you.
 
 >"Therefore being justified by faith, we have peace with God through our Lord Jesus Christ:
 By whom also we have access by faith into this grace wherein we stand, and rejoice in hope of the glory of God.
