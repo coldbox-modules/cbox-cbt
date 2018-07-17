@@ -39,9 +39,15 @@ component accessors="true" singleton threadsafe{
 	}
 
 	function onDIComplete(){
+
 		// Setup the pebble engine on startup.
 		var oBuilder = javaLoader.create( "com.mitchellbosecke.pebble.PebbleEngine$Builder" );
 		
+		// Fix to file loading only, no class loading
+		oBuilder.loader( 
+			javaLoader.create( "com.mitchellbosecke.pebble.loader.FileLoader" )
+		);
+
 		// Setup Engine settings according to module settings
 		oBuilder.strictVariables( javaCast( "boolean", moduleSettings.strictVariables ) );
 		oBuilder.autoEscaping( javaCast( "boolean", moduleSettings.autoEscaping ) );
@@ -51,6 +57,7 @@ component accessors="true" singleton threadsafe{
 
 		// Build Engine out
 		variables.engine = oBuilder.build();
+		
 		// Setup Pathing
 		variables.appPath 			= controller.getSetting( "ApplicationPath" );
 		variables.viewsConvention 	= controller.getSetting( "viewsConvention", true );
@@ -64,11 +71,12 @@ component accessors="true" singleton threadsafe{
 	/**
 	* Clears the ondemand cache.
 	*/
-	public function clearOnDemandCache(){
+	Engine function clearOnDemandCache(){
 		directoryList( variables.tmpDir, false, "path", "*cbt" )
 			.each( function( item ){
 				fileDelete( item );	
 			} );
+		return this;
 	}
 
 	/**
@@ -79,25 +87,17 @@ component accessors="true" singleton threadsafe{
 	 * @context A structure of data to bind the rendering with, so you can access it within the `{{ }}` or `{{{ }}}` notations.
 	 */
 	string function renderContent( required string content, struct context={} ){
-		// Trim content
-		arguments.content = trim( arguments.content );
-
-		// filename is based on content hash, this way it will be placed in memory until it changes.
-		var fileName = variables.tmpDir & "/cbt-content-#hash( arguments.content )##variables.moduleSettings.templateExtension#";
-
-		// Double locking for race conditions
-		if( !fileExists( fileName ) ){
-			// 5 seconds to compile
-			lock name="#filename#" type="exclusive" timeout="5" throwOnTimeout=true{
-				if( !fileExists( fileName ) ){
-					// Stream out the content
-					fileWrite( filename, arguments.content );
-				}
-			}
-		}
-
-		// Render it out.
-		return renderTemplate( template=fileName, context=arguments.context );
+		var oWriter 	= createObject( "Java", "java.io.StringWriter" ).init();
+		var event 		= requestService.getContext();
+		var argMap 		= generateBindingContext( event=event );
+		// Incorporate incoming context
+		structAppend( argMap, arguments.context, true );
+		// Parse the template
+		var oTemplate = variables.engine.getLiteralTemplate( trim( arguments.content ) );
+		// bind it for evaluation
+		oTemplate.evaluate( oWriter, argMap );
+		// render it out
+		return oWriter.toString();
 	}
 
 	/**
@@ -129,9 +129,9 @@ component accessors="true" singleton threadsafe{
 				module   = arguments.module 
 			);
 		}
-	    
-	    // Parse the template
-		var oTemplate = engine.getTemplate( thisPath );
+		
+		// Parse the template
+		var oTemplate = variables.engine.getTemplate( thisPath );
 		
 		// bind it for evaluation
 		oTemplate.evaluate( oWriter, argMap );
@@ -201,7 +201,6 @@ component accessors="true" singleton threadsafe{
 	    	"cgi"						= moduleSettings.bindCGI ? cgi : {},
 	    	"session"					= moduleSettings.bindSession ? session : {},
 	    	"request"					= moduleSettings.bindRequest ? request : {},
-	    	"server"					= moduleSettings.bindServer ? server : {},
 	    	"httpData"					= moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {},
 	    	
 	    	// ColdBox Pathing Prefixes

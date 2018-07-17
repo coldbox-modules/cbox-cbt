@@ -7,7 +7,8 @@
         }
     },
     "app":{
-        "serverHomeDirectory":".engine/lucee5"
+        "serverHomeDirectory":".engine/acf11",
+        "cfengine":"adobe@11"
     },
-    "name":"cbt@lucee5"
+    "name":"cbt@acf11"
 }

@@ -11,15 +11,18 @@ The ColdBox Templating Engine is fully featured and adheres to the Twig syntax a
 This project was sponsored by **IDG Media Services** as one of our ColdBox Sponsors.  So thank you so much for your patronage and continued support: https://www.idg.de
 
 ## LICENSE
+
 Apache License, Version 2.0.
 
 ## IMPORTANT LINKS
+
 - Source: https://github.com/coldbox-modules/cbox-cbt
 - Issues: https://github.com/coldbox-modules/cbox-cbt/issues
 - ForgeBox: http://forgebox.io/view/cbt
 - Language Documentation: http://www.mitchellbosecke.com/pebble/documentation
 
 ## SYSTEM REQUIREMENTS
+
 - Lucee 4.5+
 - ColdFusion 11+
 
@@ -58,8 +61,6 @@ moduleSettings = {
         bindCGI             = true,
         // Bind the request scope to templates
         bindRequest         = true,
-        // Bind the server scope to templates
-        bindServer          = true,
         // Bind to the request's HTTP Request Data elements
         bindHTTPRequestData = true,
         // The default cbt templating language template extension
@@ -240,7 +241,6 @@ By convention, the cbt language will bind the following variables into the templ
 "cgi"           = moduleSettings.bindCGI ? cgi : {},
 "session"       = moduleSettings.bindSession ? session : {},
 "request"       = moduleSettings.bindRequest ? request : {},
-"server"        = moduleSettings.bindServer ? server : {},
 "httpData"      = moduleSettings.bindHTTPRequestData? getHTTPRequestData() : {},
 
 // ColdBox Pathing Prefixes
