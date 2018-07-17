@@ -8,5 +8,6 @@ coldbox/*
 testbox/*
 artifacts/*
 apidocs/docbox/*
-workbench/build.number
+workbench/*
 build/*
+.engine/*

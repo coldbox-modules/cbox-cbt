@@ -25,6 +25,11 @@
 		  </p>
 		</div>
 
+		<h2>Macros</h2>
+		{% import "./macros/forms.cbt" %}
+		{{ input( name="country", value="USA", class="text-input" ) }}
+		{{ input( name="country", value="El Salvador", class="text-input" ) }}
+		
 		<h2>Utility Bindings</h2>
 		{{ "If life gives you lemons, eat lemons." | upper | abbreviate( 20 ) }}
 		<br>

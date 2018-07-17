@@ -1,0 +1,19 @@
+{% extends layoutsPath + "Main.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="/includes/css/theme.css" rel="stylesheet">
+{% endblock %} 
+
+{% block body %}
+    {% include "./helpers/header.cbt" %}
+    <div class=”container theme-showcase”> 
+        {% block mainView %}{% endblock %}
+    </div>
+    {% include ‘./helpers/footer.cbt’ %}
+{% endblock %}
+
+{% block javascripts %}
+    <script src=”/includes/js/vue.js”></script>
+    <script src=”/includes/js/app.js”></script> 
+{% endblock %}
