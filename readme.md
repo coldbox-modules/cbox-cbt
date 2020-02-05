@@ -2,9 +2,9 @@
 
 # Welcome to the ColdBox Templating Language
 
-The ColdBox templating language is inspired by [Twig](https://twig.symfony.com/) and implemented on top of the Java Engine Pebble - http://www.mitchellbosecke.com/pebble/.  This templating language will allow you to leverage the ColdBox conventions and MVC methodology to your view layer and completely decouple yourself from any CFML in your views.
+The ColdBox templating language is inspired by [Twig](https://twig.symfony.com/) and implemented on top of the Java Engine Pebble - https://pebbletemplates.io/.  This templating language will allow you to leverage the ColdBox conventions and MVC methodology to your view layer and completely decouple yourself from any CFML in your views.
 
-The ColdBox Templating Engine is fully featured and adheres to the Twig syntax and Pebble Extensions. Please follow the templating language documentation here: http://www.mitchellbosecke.com/pebble/documentation
+The ColdBox Templating Engine is fully featured and adheres to the Twig syntax and Pebble Extensions. Please follow the templating language documentation here: https://pebbletemplates.io/
 
 ## Sponsorship
 
@@ -19,7 +19,7 @@ Apache License, Version 2.0.
 - Source: https://github.com/coldbox-modules/cbox-cbt
 - Issues: https://github.com/coldbox-modules/cbox-cbt/issues
 - ForgeBox: http://forgebox.io/view/cbt
-- Language Documentation: http://www.mitchellbosecke.com/pebble/documentation
+- Language Documentation: https://pebbletemplates.io/
 
 ## SYSTEM REQUIREMENTS
 
