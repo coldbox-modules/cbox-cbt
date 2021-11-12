@@ -252,7 +252,7 @@ By convention, the cbt language will bind the following variables into the templ
 "modulesViewsPath"  = ""
 ```
 
-This means that you can use `{{ varname }}` notation to access them in your templates.  Please refer to the [Basic Usage](http://www.mitchellbosecke.com/pebble/documentation/guide/basic-usage) help page for further examples.
+This means that you can use `{{ varname }}` notation to access them in your templates.  Please refer to the [Basic Usage](https://pebbletemplates.io/wiki/guide/basic-usage/) help page for further examples.
 
 Since your cbt templates have no access AT ALL to CFML, this will force your templates to just do the view layer. All your event handlers must make sure to put in prc or rc the necessary variables for your views to use.  Including content variables, other renderings, messageboxes, etc.
 
